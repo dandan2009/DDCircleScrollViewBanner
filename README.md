@@ -7,5 +7,5 @@
 
 
 
-![](/img/demo.gif)
+![](./demo.gif)
 

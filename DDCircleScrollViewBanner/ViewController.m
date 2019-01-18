@@ -18,7 +18,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
    
-    DDCycleScrollViewBanner *banner = [[DDCycleScrollViewBanner alloc] initWithFrame:CGRectMake(10, 300, kScreenWidth-20, 200) delegate:self isShowPageIndicator:YES];
+    DDCycleScrollViewBanner *banner = [[DDCycleScrollViewBanner alloc] initWithFrame:CGRectMake(10, 100, kScreenWidth-20, 200) delegate:self isShowPageIndicator:YES];
     
     //相当于你的数据源
     NSArray *data = @[@"001.jpg",@"002.jpg",@"003.jpg",@"004.jpg",@"005.jpg"];

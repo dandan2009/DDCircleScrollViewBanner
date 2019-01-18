@@ -10,7 +10,7 @@
 #import "DDPageIndicatorView.h"
 #import "UIView+Additions.h"
 
-#define ScrollItemViewTag 1096700
+#define ScrollItemViewTag 20198
 
 @interface DDCycleScrollViewBanner (){
     UIScrollView   *contentScrollView;

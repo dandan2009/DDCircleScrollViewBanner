@@ -13,9 +13,9 @@
 #define ScrollItemViewTag 1096700
 
 @interface DDCycleScrollViewBanner (){
-    UIScrollView   *imageScroll;
+    UIScrollView   *contentScrollView;
     NSTimer        *scrollTimer;
-    NSArray *dataArray;
+    NSArray        *dataArray;
     NSMutableArray *scrollDataArray;
 }
 @property(nonatomic, strong) DDPageIndicatorView *pageControlView;//分页圆点控件
@@ -29,12 +29,12 @@
         
         self.backgroundColor = TCUIColorFromRGB(0xf2f2f2);
         
-        imageScroll = [[UIScrollView alloc] initWithFrame:self.bounds];
-        imageScroll.backgroundColor = TCUIColorFromRGB(0xf2f2f2);
-        imageScroll.showsHorizontalScrollIndicator = NO;
-        imageScroll.delegate = self;
-        imageScroll.pagingEnabled = YES;
-        [self addSubview:imageScroll];
+        contentScrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
+        contentScrollView.backgroundColor = TCUIColorFromRGB(0xf2f2f2);
+        contentScrollView.showsHorizontalScrollIndicator = NO;
+        contentScrollView.delegate = self;
+        contentScrollView.pagingEnabled = YES;
+        [self addSubview:contentScrollView];
         
         self.delegate = delegate;
         
@@ -53,7 +53,7 @@
      self.currentIndex = self.currentIndex % dataArray.count;
     if ([dataArray count] > 1) {
         self.pageControlView.hidden = NO;
-        imageScroll.scrollEnabled = YES;
+        contentScrollView.scrollEnabled = YES;
         [self.pageControlView updateViewWithCount:(int)[dataArray count]];
         [self.pageControlView setSelectedImageIndex:0];
         if (!scrollTimer) {
@@ -65,7 +65,7 @@
     }
     else {
         self.pageControlView.hidden = YES;
-        imageScroll.scrollEnabled = NO;
+        contentScrollView.scrollEnabled = NO;
         [self invalidTimer];
         self.scrollDirect = @"middle";
         [self refreshScrollView];
@@ -84,76 +84,75 @@
 }
 
 - (void)refreshScrollView {
-    //scroll只加载3个图片
-    //配置当前需要显示的3个DTO,
+    //scroll只加载3个itemView
     [scrollDataArray removeAllObjects];
     [scrollDataArray addObject:[dataArray objectAtIndex:[self getPrePage]]];
     [scrollDataArray addObject:[dataArray objectAtIndex:self.currentIndex]];
     [scrollDataArray addObject:[dataArray objectAtIndex:[self getNextPage]]];
     
-    imageScroll.contentSize = CGSizeMake(imageScroll.width*[scrollDataArray count], 0);
+    contentScrollView.contentSize = CGSizeMake(contentScrollView.width*[scrollDataArray count], 0);
     for (int i = 0; i < [scrollDataArray count]; i++) {
-        UIView *imageView = [imageScroll viewWithTag:ScrollItemViewTag+i];
+        UIView *itemView = [contentScrollView viewWithTag:ScrollItemViewTag+i];
         
-        if (!imageView) {
+        if (!itemView) {
             
             if (![self.delegate respondsToSelector:@selector(getScrollViewItemWithFrame:)] || ![self.delegate respondsToSelector:@selector(setScrollViewItem:withModule:)]) {
                 return;
             }
             
-            imageView = [self.delegate getScrollViewItemWithFrame:CGRectMake(imageScroll.width *i, 0, imageScroll.width, imageScroll.height)];
+            itemView = [self.delegate getScrollViewItemWithFrame:CGRectMake(contentScrollView.width *i, 0, contentScrollView.width, contentScrollView.height)];
             //为了使用tag属性
             UIView *contentView = [UIView new];
-            contentView.frame = imageView.frame;
-            imageView.frame = imageView.bounds;
-            [contentView addSubview:imageView];
+            contentView.frame = itemView.frame;
+            itemView.frame = itemView.bounds;
+            [contentView addSubview:itemView];
             
             contentView.tag = ScrollItemViewTag+i;
-            [imageScroll addSubview:contentView];
+            [contentScrollView addSubview:contentView];
             id dto = [scrollDataArray objectAtIndex:i];
-            [self.delegate setScrollViewItem:imageView withModule:dto];
+            [self.delegate setScrollViewItem:itemView withModule:dto];
         }
         else{
             if ([self.scrollDirect isEqualToString:@"middle"]) {//下拉刷新
                 id dto = [scrollDataArray objectAtIndex:i];
-                [self.delegate setScrollViewItem:imageView withModule:dto];
+                [self.delegate setScrollViewItem:itemView withModule:dto];
             }
             else if ([self.scrollDirect isEqualToString:@"right"]) {//右滑
-                UIView *imageView2 = [imageScroll viewWithTag:ScrollItemViewTag+2];
+                UIView *itemView2 = [contentScrollView viewWithTag:ScrollItemViewTag+2];
                 id dto = [scrollDataArray objectAtIndex:0];
-                [self.delegate setScrollViewItem:imageView2 withModule:dto];
-                imageView2.frame = CGRectMake(imageScroll.width *0, 0, imageScroll.width, imageScroll.height);
+                [self.delegate setScrollViewItem:itemView2 withModule:dto];
+                itemView2.frame = CGRectMake(contentScrollView.width *0, 0, contentScrollView.width, contentScrollView.height);
                 
-                UIView *imageView0 = [imageScroll viewWithTag:ScrollItemViewTag+0];
-                imageView0.frame = CGRectMake(imageScroll.width *1, 0, imageScroll.width, imageScroll.height);
+                UIView *itemView0 = [contentScrollView viewWithTag:ScrollItemViewTag+0];
+                itemView0.frame = CGRectMake(contentScrollView.width *1, 0, contentScrollView.width, contentScrollView.height);
                 
-                UIView *imageView1 = [imageScroll viewWithTag:ScrollItemViewTag+1];
-                imageView1.frame = CGRectMake(imageScroll.width *2, 0, imageScroll.width, imageScroll.height);
+                UIView *itemView1 = [contentScrollView viewWithTag:ScrollItemViewTag+1];
+                itemView1.frame = CGRectMake(contentScrollView.width *2, 0, contentScrollView.width, contentScrollView.height);
                 
-                imageView0.tag = ScrollItemViewTag+1;
-                imageView1.tag = ScrollItemViewTag+2;
-                imageView2.tag = ScrollItemViewTag+0;
+                itemView0.tag = ScrollItemViewTag+1;
+                itemView1.tag = ScrollItemViewTag+2;
+                itemView2.tag = ScrollItemViewTag+0;
             }
             else{//左滑
-                UIView *imageView0 = [imageScroll viewWithTag:ScrollItemViewTag+0];
+                UIView *itemView0 = [contentScrollView viewWithTag:ScrollItemViewTag+0];
                 id dto = [scrollDataArray objectAtIndex:2];
-                [self.delegate setScrollViewItem:imageView0 withModule:dto];
-                imageView0.frame = CGRectMake(imageScroll.width *2, 0, imageScroll.width, imageScroll.height);
+                [self.delegate setScrollViewItem:itemView0 withModule:dto];
+                itemView0.frame = CGRectMake(contentScrollView.width *2, 0, contentScrollView.width, contentScrollView.height);
                 
-                UIView *imageView1 = [imageScroll viewWithTag:ScrollItemViewTag+1];
-                imageView1.frame = CGRectMake(imageScroll.width *0, 0, imageScroll.width, imageScroll.height);
+                UIView *itemView1 = [contentScrollView viewWithTag:ScrollItemViewTag+1];
+                itemView1.frame = CGRectMake(contentScrollView.width *0, 0, contentScrollView.width, contentScrollView.height);
                 
-                UIView *imageView2 = [imageScroll viewWithTag:ScrollItemViewTag+2];
-                imageView2.frame = CGRectMake(imageScroll.width *1, 0, imageScroll.width, imageScroll.height);
+                UIView *itemView2 = [contentScrollView viewWithTag:ScrollItemViewTag+2];
+                itemView2.frame = CGRectMake(contentScrollView.width *1, 0, contentScrollView.width, contentScrollView.height);
                 
-                imageView1.tag = ScrollItemViewTag+0;
-                imageView2.tag = ScrollItemViewTag+1;
-                imageView0.tag = ScrollItemViewTag+2;
+                itemView1.tag = ScrollItemViewTag+0;
+                itemView2.tag = ScrollItemViewTag+1;
+                itemView0.tag = ScrollItemViewTag+2;
             }
             break;
         }
     }
-    [imageScroll setContentOffset:CGPointMake(imageScroll.width, 0)];
+    [contentScrollView setContentOffset:CGPointMake(contentScrollView.width, 0)];
     [self.pageControlView setSelectedImageIndex:self.currentIndex];
 }
 
@@ -165,8 +164,6 @@
         [self.pageControlView setSelectedImageIndex:self.currentIndex];
     }
     
-    // 水平滚动
-    // 往下翻一张
     if(xOffset >= (2*(int)scrollView.frame.size.width)) {
         self.scrollDirect = @"left";
         //向左滑
@@ -194,7 +191,7 @@
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)aScrollView{
-    [imageScroll setContentOffset:CGPointMake(imageScroll.width, 0)];
+    [contentScrollView setContentOffset:CGPointMake(contentScrollView.width, 0)];
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
@@ -262,6 +259,7 @@
     self.scrollDirect = @"left";
     self.currentIndex++;
     self.currentIndex = self.currentIndex % [dataArray count];
+    //添加动画
     for (int i = 0; i < 3; i++) {
         CATransition *animation = [CATransition animation];
         [animation setDuration:0.35f];
@@ -270,8 +268,8 @@
         [animation setType:kCATransitionPush];
         [animation setSubtype:kCATransitionFromRight];
         
-        UIView *imageView = [imageScroll viewWithTag:ScrollItemViewTag+i];
-        [imageView.layer addAnimation:animation forKey:nil];
+        UIView *itemView = [contentScrollView viewWithTag:ScrollItemViewTag+i];
+        [itemView.layer addAnimation:animation forKey:nil];
     }
     
     [self.pageControlView setSelectedImageIndex:self.currentIndex];

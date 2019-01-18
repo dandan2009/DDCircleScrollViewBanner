@@ -20,22 +20,12 @@
     //高亮状态时的图片
     UIImage    *hilightedImage;
     
-    //图片的宽度
-    //    int imageWidth;
-    
-    //图片空白处的宽度
-    //    int whiteSpaceWidth;
-    
     //当前已经显示的高亮图片的index
     NSUInteger currentSelectedIndex;
     
-
-    
     //每个图片是否需要显示圆角
     BOOL imageNeedCornerRadius;
-    
 }
-
 
 @property (nonatomic, assign) int imageWidth;
 
@@ -64,7 +54,6 @@
     if (self) {
         [self setNormalColor:normalColor highlightedColor:highlightedColor];
     }
-
     return self;
 }
 
@@ -80,9 +69,6 @@
     UIView *normalView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _imageWidth, self.frame.size.height)];
     [normalView addSubview:normalViewContent];
     normalImage = [self convertViewToImage:normalView];
-    
-    
-    
     
     UIView *highlightedView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _imageWidth, self.frame.size.height)];
     if (!highlightedColor) {
@@ -105,7 +91,6 @@
 - (void)updateViewWithCount:(int )count {
     //设置新的UI元素
     totalCount = count;
-    
     //内部重新加载
     [self refreshAllSubView];
 }
@@ -121,25 +106,9 @@
     
     //设置新的内容
     for (int i = 0; i < totalCount; i++) {
+        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake((_imageWidth + _whiteSpaceWidth) * i + self.frame.size.width/2.0 - totalWidth/2.0, 0, _imageWidth, self.frame.size.height)];
         
-        UIImageView *imageView = nil;
-        
-        //0:中下  1:右上  2:右下  3:左下
-//        if (innerAlignType == 1 || innerAlignType == 2) {
-//            //右对齐
-//            imageView = [[UIImageView alloc] initWithFrame:CGRectMake(self.frame.size.width-(totalCount-i)*_imageWidth - (totalCount-i-1)*_whiteSpaceWidth, 0, _imageWidth, self.frame.size.height)];
-//        }
-//        else if (innerAlignType == 3) {
-//            //左对齐
-//            imageView = [[UIImageView alloc] initWithFrame:CGRectMake((_imageWidth + _whiteSpaceWidth) * i, 0, _imageWidth, self.frame.size.height)];
-//        }
-//        else
-        {
-            //中下
-            imageView = [[UIImageView alloc] initWithFrame:CGRectMake((_imageWidth + _whiteSpaceWidth) * i + self.frame.size.width/2.0 - totalWidth/2.0, 0, _imageWidth, self.frame.size.height)];
-        }
         imageView.tag = 10000+i;
-//        imageView.userInteractionEnabled = YES;
         if (i == 0) {
             imageView.image = hilightedImage;
             currentSelectedIndex = 0;
@@ -147,16 +116,6 @@
         else {
             imageView.image = normalImage;
         }
-
-//        if (imageNeedCornerRadius) {
-//            imageView.layer.cornerRadius = self.frame.size.height/2.0;
-//            imageView.clipsToBounds      = YES;
-//        }
-//        else{
-//            imageView.layer.cornerRadius = 0.0f;
-//            imageView.clipsToBounds      = YES;
-//        }
-
         [self addSubview:imageView];
     }
 }
@@ -180,17 +139,6 @@
     currentSelectedIndex = index;
 }
 
-/**
- *  设置对齐类型
- *
- *  @param alignType 对齐类型
- */
-//- (void)setInnerAlignType:(PageIndicatorAlignType )alignType {
-//    innerAlignType = alignType;
-
-    //内部重新加载
-//    [self refreshAllSubView];
-//}
 
 /**
  *  设置每个图片是否需要显示圆角
@@ -208,24 +156,5 @@
     UIGraphicsEndImageContext();
     return image;
 }
-
-//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-//    
-//    if ([self.nextResponder respondsToSelector:@selector(touchesBegan:withEvent:)]) {
-//        [self.nextResponder touchesBegan:touches withEvent:event];
-//    }
-//}
-//
-//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-//    if ([self.nextResponder respondsToSelector:@selector(touchesEnded:withEvent:)]) {
-//        [self.nextResponder touchesEnded:touches withEvent:event];
-//    }
-//}
-//
-//- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-//    if ([self.nextResponder respondsToSelector:@selector(touchesCancelled:withEvent:)]) {
-//        [self.nextResponder touchesCancelled:touches withEvent:event];
-//    }
-//}
 
 @end

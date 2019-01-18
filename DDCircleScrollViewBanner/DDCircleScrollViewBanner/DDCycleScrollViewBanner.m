@@ -208,6 +208,7 @@
     if (scrollTimer) {
         [self invalidTimer];
     }
+    //这里有一个循序引用的问题待修复
     scrollTimer = [NSTimer scheduledTimerWithTimeInterval:3.0f target:self selector:@selector(changeImage) userInfo:nil repeats:YES];
     [[NSRunLoop mainRunLoop] addTimer:scrollTimer forMode:NSRunLoopCommonModes];
 }
@@ -253,7 +254,7 @@
 }
 
 /**
- *  切换图片
+ *  切换itemView
  */
 - (void)changeImage {
     self.scrollDirect = @"left";
